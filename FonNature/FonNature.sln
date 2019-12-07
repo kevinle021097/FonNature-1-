@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.902
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FonNature", "FonNature\FonNature.csproj", "{04FCA5A5-602A-41DF-9A38-3E63B1814CF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{823E9213-B84A-49F1-9BA9-9E04A8BE68BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		All|Any CPU = All|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04FCA5A5-602A-41DF-9A38-3E63B1814CF5}.All|Any CPU.ActiveCfg = Release|Any CPU
+		{04FCA5A5-602A-41DF-9A38-3E63B1814CF5}.All|Any CPU.Build.0 = Release|Any CPU
+		{04FCA5A5-602A-41DF-9A38-3E63B1814CF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04FCA5A5-602A-41DF-9A38-3E63B1814CF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04FCA5A5-602A-41DF-9A38-3E63B1814CF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04FCA5A5-602A-41DF-9A38-3E63B1814CF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{823E9213-B84A-49F1-9BA9-9E04A8BE68BC}.All|Any CPU.ActiveCfg = Release|Any CPU
+		{823E9213-B84A-49F1-9BA9-9E04A8BE68BC}.All|Any CPU.Build.0 = Release|Any CPU
+		{823E9213-B84A-49F1-9BA9-9E04A8BE68BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{823E9213-B84A-49F1-9BA9-9E04A8BE68BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{823E9213-B84A-49F1-9BA9-9E04A8BE68BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{823E9213-B84A-49F1-9BA9-9E04A8BE68BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FCED6463-DE7D-4FAB-BE81-88C0896C6CE2}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,25 @@
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\bin\Debug\Models.dll.config
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\bin\Debug\Models.dll
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\bin\Debug\Models.pdb
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\bin\Debug\EntityFramework.dll
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\bin\Debug\EntityFramework.SqlServer.dll
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\bin\Debug\EntityFramework.xml
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\bin\Debug\EntityFramework.SqlServer.xml
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\obj\Debug\Models.csprojAssemblyReference.cache
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\obj\Debug\Models.csproj.CoreCompileInputs.cache
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\obj\Debug\Models.csproj.CopyComplete
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\obj\Debug\Models.dll
+D:\TAILIEUHOCTAP\School\HeQuanTriCoSoDuLieu\FonNature\Models\obj\Debug\Models.pdb
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\Models.dll.config
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\Models.dll
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\Models.pdb
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\EntityFramework.dll
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\EntityFramework.SqlServer.dll
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\EntityFramework.xml
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\EntityFramework.SqlServer.xml
+D:\FonNature (1)\FonNature (1)\FonNature\Models\obj\Debug\Models.csprojAssemblyReference.cache
+D:\FonNature (1)\FonNature (1)\FonNature\Models\obj\Debug\Models.csproj.CoreCompileInputs.cache
+D:\FonNature (1)\FonNature (1)\FonNature\Models\obj\Debug\Models.csproj.CopyComplete
+D:\FonNature (1)\FonNature (1)\FonNature\Models\obj\Debug\Models.dll
+D:\FonNature (1)\FonNature (1)\FonNature\Models\obj\Debug\Models.pdb
+D:\FonNature (1)\FonNature (1)\FonNature\Models\bin\Debug\FastMember.dll
