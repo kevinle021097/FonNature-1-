@@ -57,10 +57,11 @@ namespace Models.Repository
                 object[] sqlparamater =
                 {
                     new SqlParameter("@Name", member.Name),
-                   
+                    new SqlParameter("@Id", member.Id),
+
 
                 };
-                _db.Database.ExecuteSqlCommand("SP_Member_Update @Name", sqlparamater);
+                _db.Database.ExecuteSqlCommand("SP_Member_Update @Id, @Name", sqlparamater);
                 return true;
             }
             catch (Exception e)

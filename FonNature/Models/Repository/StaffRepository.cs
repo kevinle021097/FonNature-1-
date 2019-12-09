@@ -59,6 +59,7 @@ namespace Models.Repository
             {
                 object[] sqlparamater =
                 {
+                     new SqlParameter("@Id", staff.Id),
                     new SqlParameter("@Name", staff.Name),
                     new SqlParameter("@Email", staff.Email),
                     new SqlParameter("@Address", staff.Address),
@@ -66,7 +67,7 @@ namespace Models.Repository
                     new SqlParameter("@idPosition", staff.IdPosition),
 
                 };
-                _db.Database.ExecuteSqlCommand("SP_Account_Update @Name,@Email,@Address,@Phone,@idPosition", sqlparamater);
+                _db.Database.ExecuteSqlCommand("SP_Staff_Update @Id, @Name,@Email,@Address,@Phone,@idPosition", sqlparamater);
                 return true;
             }
             catch (Exception e)
@@ -74,6 +75,7 @@ namespace Models.Repository
                 throw e;
             }
         }
+
 
         public bool Delete(string Id)
         {
@@ -93,6 +95,24 @@ namespace Models.Repository
             }
         }
 
-       
+
+        public List<Staff> SearchByName(string searchString)
+        {
+            if (searchString == null) return new List<Staff>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@Name", searchString),
+                };
+                var staffs = _db.Database.SqlQuery<Staff>("SP_Staff_SearchByName @Name", sqlparamater);
+                return staffs.ToList();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
     }
 }

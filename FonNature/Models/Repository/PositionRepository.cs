@@ -92,6 +92,24 @@ namespace Models.Repository
                 throw e;
             }
         }
+        public List<Position> SearchByName(string searchString)
+        {
+            if (searchString == null) return new List<Position>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@Name", searchString),
+                };
+                var positions =  _db.Database.SqlQuery<Position>("SP_Position_SearchByName @Name", sqlparamater);
+                return positions.ToList();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
 
     }
 }

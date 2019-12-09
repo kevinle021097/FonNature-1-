@@ -56,10 +56,11 @@ namespace Models.Repository
             {
                 object[] sqlparamater =
                 {
+                    new SqlParameter("@Id", productCategory.Id),
                     new SqlParameter("@Name", productCategory.Name)
 
                 };
-                _db.Database.ExecuteSqlCommand("SP_Product_Category_Update @Name", sqlparamater);
+                _db.Database.ExecuteSqlCommand("SP_Product_Category_Update @Id, @Name", sqlparamater);
                 return true;
             }
             catch (Exception e)
@@ -79,6 +80,24 @@ namespace Models.Repository
                 };
                 _db.Database.ExecuteSqlCommand("SP_Product_Category_Del @Id", sqlparamater);
                 return true;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public List<ProductCategory> SearchByName(string searchString)
+        {
+            if (searchString == null) return new List<ProductCategory>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@Name", searchString),
+                };
+                var categories = _db.Database.SqlQuery<ProductCategory>("SP_ProductCategory_SearchByName @Name", sqlparamater);
+                return categories.ToList();
             }
             catch (Exception e)
             {

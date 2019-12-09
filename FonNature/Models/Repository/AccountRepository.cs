@@ -1,6 +1,7 @@
 ﻿using Models.Entity;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -40,6 +41,7 @@ namespace Models.Repository
         {
             if (account == null) return 0;
             if (account.IdStaff == 0) return 0;
+            account.Password = Encryption.MD5Hash(Encryption.Base64Encode(account.Password));
             try
             {
                 object[] sqlparamater =
@@ -62,6 +64,7 @@ namespace Models.Repository
         {
             if (account == null) return false;
             if (account.IdStaff == 0) return false;
+            account.Password = Encryption.MD5Hash(Encryption.Base64Encode(account.Password));
             try
             {
                 object[] sqlparamater =
@@ -138,6 +141,18 @@ namespace Models.Repository
             if (!res.Select(x => x.UserName).Contains(userName))
                 return false;
             return true;
+        }
+
+        public bool CheckExits(string userName)
+        {
+            if (userName == null) return false;
+            var userNameParamater = new SqlParameter("userName", userName);
+            var result = new SqlParameter("exits", SqlDbType.Bit)
+            {
+                Direction = ParameterDirection.Output
+            };
+            _db.Database.ExecuteSqlCommand("SP_Account_CheckExits @exits output, @userName", result, userNameParamater);
+            return bool.Parse(result.Value.ToString());
         }
     }
 }

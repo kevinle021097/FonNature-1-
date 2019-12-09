@@ -1,6 +1,7 @@
 ﻿using Models.Entity;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -35,18 +36,40 @@ namespace Models.Repository
             if (product.IdSupplier == 0) return 0;
             try
             {
-                object[] sqlparamater =
+
+                   
+                if(product.IdPromotion != null)
                 {
+                    object[] sqlparamater =
+                {
+                    new SqlParameter("@Id", product.Id),
                     new SqlParameter("@Name", product.Name),
-                    new SqlParameter("@Quantity", product.Quantity),
                     new SqlParameter("@Price", product.Price),
                     new SqlParameter("@IdCategory", product.IdCategory),
                     new SqlParameter("@IdPromotion", product.IdPromotion),
                     new SqlParameter("@IdSupplier", product.IdSupplier),
                     new SqlParameter("@IdColor", product.IdColor),
                 };
-                int res = _db.Database.ExecuteSqlCommand("SP_Product_Add @Name,@Quantity,@Price,@IdCategory,@IdPromotion,@IdSupplier,@IdColor", sqlparamater);
-                return res;
+                    int res = _db.Database.ExecuteSqlCommand("SP_Product_Add @Id,@Name,@Price,@IdCategory,@IdPromotion,@IdSupplier,@IdColor", sqlparamater);
+                    return res;
+                }
+                else
+                {
+                    object[] sqlparamater =
+              {
+                    new SqlParameter("@Id", product.Id),
+                    new SqlParameter("@Name", product.Name),
+                    new SqlParameter("@Price", product.Price),
+                    new SqlParameter("@IdCategory", product.IdCategory),
+                    new SqlParameter("@IdSupplier", product.IdSupplier),
+                    new SqlParameter("@IdColor", product.IdColor),
+                };
+                    int res = _db.Database.ExecuteSqlCommand("SP_Product_Add @Id,@Name,@Price,@IdCategory,null,@IdSupplier,@IdColor", sqlparamater);
+                    return res;
+                }
+                    
+
+               
             }
             catch (Exception e)
             {
@@ -61,10 +84,12 @@ namespace Models.Repository
             if (product.IdSupplier == 0) return false;
             try
             {
-                object[] sqlparamater =
+                if (product.IdPromotion != null)
                 {
+                    object[] sqlparamater =
+                {
+                    new SqlParameter("@Id", product.Id),
                     new SqlParameter("@Name", product.Name),
-                    new SqlParameter("@Quantity", product.Quantity),
                     new SqlParameter("@Price", product.Price),
                     new SqlParameter("@IdCategory", product.IdCategory),
                     new SqlParameter("@IdPromotion", product.IdPromotion),
@@ -72,8 +97,24 @@ namespace Models.Repository
                     new SqlParameter("@IdColor", product.IdColor),
 
                 };
-                _db.Database.ExecuteSqlCommand("SP_Product_Update @Name,@Quantity,@Price,@IdCategory,@IdPromotion,@IdSupplier,@IdColor", sqlparamater);
-                return true;
+                    _db.Database.ExecuteSqlCommand("SP_Product_Update @Id,@Name,@Price,@IdCategory,@IdPromotion,@IdSupplier,@IdColor", sqlparamater);
+                    return true;
+                }
+                else
+                {
+                    object[] sqlparamater =
+                {
+                    new SqlParameter("@Id", product.Id),
+                    new SqlParameter("@Name", product.Name),
+                    new SqlParameter("@Price", product.Price),
+                    new SqlParameter("@IdCategory", product.IdCategory),
+                    new SqlParameter("@IdSupplier", product.IdSupplier),
+                    new SqlParameter("@IdColor", product.IdColor),
+
+                };
+                    _db.Database.ExecuteSqlCommand("SP_Product_Update @Id,@Name,@Price,@IdCategory,null,@IdSupplier,@IdColor", sqlparamater);
+                    return true;
+                }
             }
             catch (Exception e)
             {
@@ -111,6 +152,36 @@ namespace Models.Repository
                 };
                 var res = _db.Database.SqlQuery<Color>("SP_Product_ListColor @Name", sqlparamater).ToList();
                 return res;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public bool CheckExits(string id)
+        {
+            if (id == null) return false;
+            var userNameParamater = new SqlParameter("Id", id);
+            var result = new SqlParameter("exits", SqlDbType.Bit)
+            {
+                Direction = ParameterDirection.Output
+            };
+            _db.Database.ExecuteSqlCommand("SP_Product_CheckExits @exits output, @Id", result, userNameParamater);
+            return bool.Parse(result.Value.ToString());
+        }
+
+        public List<Product> SearchByName(string searchString)
+        {
+            if (searchString == null) return new List<Product>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@Name", searchString),
+                };
+                var products = _db.Database.SqlQuery<Product>("SP_Product_SearchByName @Name", sqlparamater);
+                return products.ToList();
             }
             catch (Exception e)
             {

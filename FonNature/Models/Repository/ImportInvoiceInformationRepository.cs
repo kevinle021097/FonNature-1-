@@ -96,6 +96,24 @@ namespace Models.Repository
             }
         }
 
+        public List<ImportInvoiceInformation> GetListByIdInvoice(int idImportInvoice)
+        {
+            if (idImportInvoice == 0) return new List<ImportInvoiceInformation>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@IdImportInvoice", idImportInvoice)
+                };
+                var res = _db.Database.SqlQuery<ImportInvoiceInformation>("SP_Import_Invoice_Information_GetListByIdInvoice @IdImportInvoice", sqlparamater).ToList();
+                return res;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
 
     }
 }

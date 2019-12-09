@@ -95,6 +95,12 @@
     <Compile Include="FMain.Designer.cs">
       <DependentUpon>FMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormAddImportInvoice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAddImportInvoice.Designer.cs">
+      <DependentUpon>FormAddImportInvoice.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FAccountProfile.resx">

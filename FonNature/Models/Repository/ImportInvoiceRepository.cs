@@ -88,6 +88,39 @@ namespace Models.Repository
             }
         }
 
+        public List<ImportInvoice> GetListByDateAndPage(DateTime startDay, DateTime endDay , int page)
+        {
+            if(startDay != null && endDay != null)
+            {
+                object[] sqlparamater =
+               {
+                    new SqlParameter("@startDay", startDay),
+                    new SqlParameter("@endDay", endDay),
+                    new SqlParameter("@page", page),
+
+                };
+                var res = _db.Database.SqlQuery<ImportInvoice>("exec SP_Import_Invoice_GetByDateAndPage @startDay, @endDay , @page", sqlparamater).ToList();
+                return res;
+            }
+            return new List<ImportInvoice>();
+        }
+
+        public List<ImportInvoice> GetListByDate(DateTime startDay, DateTime endDay)
+        {
+            if (startDay != null && endDay != null)
+            {
+                object[] sqlparamater =
+               {
+                    new SqlParameter("@startDay", startDay),
+                    new SqlParameter("@endDay", endDay),
+
+                };
+                var res = _db.Database.SqlQuery<ImportInvoice>("exec SP_Import_Invoice_GetByDate @startDay, @endDay", sqlparamater).ToList();
+                return res;
+            }
+            return new List<ImportInvoice>();
+        }
+
 
     }
 }

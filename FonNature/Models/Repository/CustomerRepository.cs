@@ -59,6 +59,7 @@ namespace Models.Repository
             {
                 object[] sqlparamater =
                 {
+                    new SqlParameter("@Id", customer.Id),
                     new SqlParameter("@Name", customer.Name),
                     new SqlParameter("@Email", customer.Email),
                     new SqlParameter("@Address", customer.Address),
@@ -66,7 +67,7 @@ namespace Models.Repository
                     new SqlParameter("@idMember", customer.IdMember),
 
                 };
-                _db.Database.ExecuteSqlCommand("SP_Customer_Update @Name,@Email,@Address,@Phone,@idMember", sqlparamater);
+                _db.Database.ExecuteSqlCommand("SP_Customer_Update @Id, @Name,@Email,@Address,@Phone,@idMember", sqlparamater);
                 return true;
             }
             catch (Exception e)
@@ -88,6 +89,24 @@ namespace Models.Repository
                 return true;
             }
             catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public List<Customer> SearchByName(string searchString)
+        {
+            if (searchString == null) return new List<Customer>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@Name", searchString),
+                };
+                var customers = _db.Database.SqlQuery<Customer>("SP_Customer_SearchByName @Name", sqlparamater);
+                return customers.ToList();
+            }
+            catch (Exception e) 
             {
                 throw e;
             }

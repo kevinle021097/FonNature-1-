@@ -51,10 +51,11 @@ namespace Models.Repository
             {
                 object[] sqlparamater =
                 {
-                    new SqlParameter("@Name", Color.Name),
+                    new SqlParameter("@Id", Color.Id),
+                    new SqlParameter("@Name", Color.Name)
 
                 };
-                _db.Database.ExecuteSqlCommand("SP_Color_Update @Name", sqlparamater);
+                _db.Database.ExecuteSqlCommand("SP_Color_Update @Id,@Name", sqlparamater);
                 return true;
             }
             catch (Exception e)

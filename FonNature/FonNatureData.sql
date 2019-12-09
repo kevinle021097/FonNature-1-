@@ -112,8 +112,8 @@ CREATE TABLE Product
 (
 	Id NVARCHAR(100) PRIMARY KEY,
 	Name NVARCHAR(100) NOT NULL,
-	Quantity INT NOT NULL,
-	Price DECIMAL(18,0) NOT NULL,
+	Quantity INT default 0 NOT NULL,
+	Price DECIMAL(18,0) default 0  NOT NULL,
 	IdCategory INT NOT NULL,
 	IdPromotion INT,
 	IdSupplier INT NOT NULL,
@@ -263,6 +263,9 @@ BEGIN
 	Name = @Name where Id = @Id
 END
 
+EXEC SP_Position_Update @Id = 2, @Name = 'CEO'
+SELECT * from Position
+
 GO
 
 --Delete
@@ -276,6 +279,15 @@ END
 
 GO
 
+-- SearchByName
+alter PROC SP_Position_SearchByName
+@Name nvarchar(100)
+AS
+BEGIN
+	Select * from Position where Name LIKE '%' + @Name + '%' 
+END
+
+EXEC SP_Position_SearchByName @Name = 'o'
 
 -- 2.  Staff
 --Get List
@@ -319,6 +331,15 @@ END
 
 GO
 
+-- SearchByName
+CREATE PROC SP_Staff_SearchByName
+@Name nvarchar(100)
+AS
+BEGIN
+	Select * from Staff where Name LIKE '%' + @Name + '%' 
+END
+
+EXEC SP_Staff_SearchByName @Name = 'p'
 
 -- 3.  Account
 -- Get Detail
@@ -404,7 +425,25 @@ BEGIN
 	SELECT * FROM Account a WHERE a.UserName = @userName AND a.Password = @passWord
 END
 
-EXEC SP_Account_Login @userName = N'admin', @passWord= '81dc9bdb52d04dc20036dbd8313ed055'
+
+-- Check Exits
+CREATE proc SP_Account_CheckExits
+@exits bit OUTPUT,
+@userName nvarchar(100)
+as
+begin
+DECLARE @count int
+	SELECT @count = count(*) 
+	FROM Account a 
+	WHERE a.UserName = @userName
+end
+BEGIN
+ if(@count > 0)
+ set @exits = 0;
+ else
+ set @exits = 1;
+ end
+ GO
 
 
 -- 4.  Member
@@ -490,6 +529,16 @@ END
 
 GO
 
+--Search By Name
+--Search
+CREATE PROC SP_Customer_SearchByName
+@Name NVARCHAR(100)
+AS
+BEGIN
+	SELECT * FROM Customer a WHERE a.Name LIKE '%'+@Name+'%'
+END
+
+
 
 -- 6.  Product Category
 --Get List
@@ -530,6 +579,17 @@ BEGIN
 END
 
 GO
+
+--Search By Name
+--Search
+CREATE PROC SP_ProductCategory_SearchByName
+@Name NVARCHAR(100)
+AS
+BEGIN
+	SELECT * FROM ProductCategory a WHERE a.Name LIKE '%'+@Name+'%'
+END
+
+
 
 
 -- 7.  Promotion
@@ -572,6 +632,46 @@ BEGIN
 END
 
 GO
+--Search By Name
+--Search
+CREATE PROC SP_Promotion_SearchByName
+@Name NVARCHAR(100)
+AS
+BEGIN
+	SELECT * FROM Promotion a WHERE a.Title LIKE '%'+@Name+'%'
+END
+GO
+
+--Search By Coupon
+--Search
+CREATE PROC SP_Promotion_SearchByCoupon
+@Name NVARCHAR(10)
+AS
+BEGIN
+	SELECT * FROM Promotion a WHERE a.Coupon LIKE '%'+@Name+'%'
+END
+GO
+
+
+-- Check Exits Coupon
+CREATE proc SP_Promotion_CheckExits
+@exits bit OUTPUT,
+@coupon nvarchar(10)
+as
+begin
+DECLARE @count int
+	SELECT @count = count(*) 
+	FROM Promotion a 
+	WHERE a.Coupon = @coupon
+end
+BEGIN
+ if(@count > 0)
+ set @exits = 0;
+ else
+ set @exits = 1;
+ end
+ GO
+
 
 
 -- 8.  Supplier
@@ -615,6 +715,17 @@ BEGIN
 END
 
 GO
+--Search By Name
+--Search
+CREATE PROC SP_Supplier_SearchByName
+@Name NVARCHAR(100)
+AS
+BEGIN
+	SELECT * FROM Supplier a WHERE a.Name LIKE '%'+@Name+'%'
+END
+
+
+
 
 -- 9.  Color
 --Get List
@@ -666,26 +777,26 @@ BEGIN
 END
 GO
 --Add
-CREATE PROC SP_Product_Add
-@Name NVARCHAR(100), @Quantity int, 
-@Price DECIMAL(18,0), @IdCategory int, @IdPromotion int, @IdSupplier INT, @IdColor int
+create PROC SP_Product_Add
+@Id nvarchar(100), @Name NVARCHAR(100), 
+@Price DECIMAL(18,0), @IdCategory int, @IdPromotion int = Null , @IdSupplier INT, @IdColor int
 AS
 BEGIN
-	INSERT INTO Product (Name, Quantity, Price, IdCategory, IdPromotion, IdSupplier, IdColor)
-	VALUES (@Name, @Quantity, @Price, @IdCategory, @IdPromotion, @IdSupplier, @IdColor);
+	INSERT INTO Product (Id ,Name, Price, IdCategory, IdPromotion, IdSupplier, IdColor)
+	VALUES (@Id, @Name, @Price, @IdCategory, @IdPromotion, @IdSupplier, @IdColor);
 END
 GO
 
 --Update
-CREATE PROC SP_Product_Update
-@Id NVARCHAR(100), @Name NVARCHAR(100), @Quantity int, 
+create PROC SP_Product_Update
+@Id NVARCHAR(100), @Name NVARCHAR(100), 
 @Price DECIMAL(18,0), @IdCategory int, @IdPromotion int, @IdSupplier int, @IdColor int
 AS
 BEGIN
 	Update Product
 	set
-	Name = @Name, Quantity = @Quantity,
-	Price = @Price, IdCategory = @IdCategory, IdPromotion = @IdPromotion, IdSupplier = @IdSupplier, @IdColor = IdColor
+	Name = @Name,
+	Price = @Price, IdCategory = @IdCategory, IdPromotion = @IdPromotion, IdSupplier = @IdSupplier, IdColor = @IdColor
 	where Id = @Id
 END
 
@@ -711,6 +822,33 @@ END
 
 GO
 
+-- Check Exits Id
+CREATE proc SP_Product_CheckExits
+@exits bit OUTPUT,
+@Id nvarchar(100)
+as
+begin
+DECLARE @count int
+	SELECT @count = count(*) 
+	FROM Product a 
+	WHERE a.Id = @Id
+end
+BEGIN
+ if(@count > 0)
+ set @exits = 0;
+ else
+ set @exits = 1;
+ end
+ GO
+
+ --Search By Name
+--Search
+CREATE PROC SP_Product_SearchByName
+@Name NVARCHAR(100)
+AS
+BEGIN
+	SELECT * FROM Product a WHERE a.Name LIKE '%'+@Name+'%'
+END
 
 
 
@@ -756,7 +894,35 @@ END
 
 GO
 
+create PROC SP_Import_Invoice_GetByDate
+@startDay date, @endDay date 
+AS
+BEGIN
+	Select * from ImportInvoice where Date >= @startDay and Date <= @endDay
+END
+go
 
+
+
+--List ImportInvoice by date and page
+create PROC SP_Import_Invoice_GetByDateAndPage
+@startDay date , @endDay DATE , @page INT
+AS
+BEGIN
+	DECLARE @countRows INT = 10 -- Số lượng dòng mỗi page
+	DECLARE @selectedrows INT = @countRows * @page  -- Số tổng dòng tất cả trang trước trang đang chọn, ví dụ lấy trang 3, -> Lấy tổng dòng trang 1 2 3
+	DECLARE @exceptrows INT = (@page-1)*@countRows -- Số tổng dòng trang trước trang đang trọn, ví dụ lấy trang 3 -> Lấy tổng dòng trang  1 2
+
+	; WITH ImportInvoiceByDate AS (
+	Select * from ImportInvoice where Date >= @startDay and Date <= @endDay
+	) 
+	SELECT TOP (@selectedrows) * FROM ImportInvoiceByDate 
+	EXCEPT
+	SELECT TOP (@exceptrows) * FROM ImportInvoiceByDate	
+END
+GO
+
+exec SP_Import_Invoice_GetByDateAndPage @startDay = '2019-12-06' , @endDay = '2019-12-09' , @page = 1
 
 -- 12. Import Invoice Information
 --Get List
@@ -798,6 +964,16 @@ BEGIN
 END
 
 GO
+
+--List InvoiceInfo by Id
+CREATE PROC SP_Import_Invoice_Information_GetListByIdInvoice
+@IdImportInvoice BIGINT
+AS
+BEGIN
+	select * from ImportInvoiceInformation where IdImportInvoice = @IdImportInvoice;
+END
+GO
+
 
 
 

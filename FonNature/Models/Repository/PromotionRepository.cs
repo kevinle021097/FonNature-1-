@@ -1,6 +1,7 @@
 ﻿using Models.Entity;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -59,13 +60,14 @@ namespace Models.Repository
             {
                 object[] sqlparamater =
                 {
+                    new SqlParameter("@Id", promotion.Id),
                     new SqlParameter("@Title", promotion.Title),
                     new SqlParameter("@Coupon", promotion.Coupon),
                     new SqlParameter("@Quantity", promotion.Quantity),
                     new SqlParameter("@Price", promotion.PromotionPrice),
 
                 };
-                _db.Database.ExecuteSqlCommand("SP_Promotion_Update @Title,@Coupon,@Quantity,@Price", sqlparamater);
+                _db.Database.ExecuteSqlCommand("SP_Promotion_Update @Id, @Title,@Coupon,@Quantity,@Price", sqlparamater);
                 return true;
             }
             catch (Exception e)
@@ -90,6 +92,54 @@ namespace Models.Repository
             {
                 throw e;
             }
+        }
+
+        public List<Promotion> SearchByName(string searchString)
+        {
+            if (searchString == null) return new List<Promotion>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@Name", searchString),
+                };
+                var promotions = _db.Database.SqlQuery<Promotion>("SP_Promotion_SearchByName @Name", sqlparamater);
+                return promotions.ToList();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public List<Promotion> SearchByCoupon(string coupon)
+        {
+            if (coupon == null) return new List<Promotion>();
+            try
+            {
+                object[] sqlparamater =
+                {
+                    new SqlParameter("@Name", coupon),
+                };
+                var promotions = _db.Database.SqlQuery<Promotion>("SP_Promotion_SearchByCoupon @Name", sqlparamater);
+                return promotions.ToList();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public bool CheckExits(string coupon)
+        {
+            if (coupon == null) return false;
+            var userNameParamater = new SqlParameter("coupon", coupon);
+            var result = new SqlParameter("exits", SqlDbType.Bit)
+            {
+                Direction = ParameterDirection.Output
+            };
+            _db.Database.ExecuteSqlCommand("SP_Promotion_CheckExits @exits out , @coupon", result, userNameParamater);
+            return bool.Parse(result.Value.ToString());
         }
 
 
