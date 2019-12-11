@@ -291,6 +291,12 @@ END
 
 EXEC SP_Position_SearchByName @Name = 'o'
 
+create NONCLUSTERED index position_name
+			on Position(Name)
+			include (Id)
+
+			SELECT * from Position
+
 -- 2.  Staff
 --Get List
 CREATE PROC SP_Staff_GetList
@@ -342,6 +348,14 @@ BEGIN
 END
 
 EXEC SP_Staff_SearchByName @Name = 'p'
+
+set STATISTICS io, time on;
+
+create NONCLUSTERED index staff_name
+			on Staff(Name)
+			include (Id)
+
+			SELECT * from Staff
 
 -- 3.  Account
 -- Get Detail
@@ -545,6 +559,11 @@ BEGIN
 END
 GO
 
+create NONCLUSTERED index customer_name
+			on Customer(Name)
+			include (Id)
+
+
 --Search By Phone
 --Search
 CREATE PROC SP_Customer_SearchByPhone
@@ -554,6 +573,10 @@ BEGIN
 	SELECT * FROM Customer a WHERE a.Phone LIKE '%'+@Phone+'%'
 END
 
+
+create NONCLUSTERED index customer_phone
+			on Customer(Phone)
+			include (Id)
 
 
 
