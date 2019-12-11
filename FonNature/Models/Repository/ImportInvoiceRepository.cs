@@ -40,7 +40,7 @@ namespace Models.Repository
                     new SqlParameter("@IdSupplier", importInvoice.IdSupplier),
                    
                 };
-                int res = _db.Database.ExecuteSqlCommand("SP_Import_Invoice_Add @Date,@IdSupplier", sqlparamater);
+                int res = _db.Database.ExecuteSqlCommand("SP_Import_Invoice_Add @Id out, @Date,@IdSupplier", sqlparamater);
                 return res;
             }
             catch (Exception e)

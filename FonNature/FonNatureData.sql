@@ -160,7 +160,9 @@ CREATE TABLE Orders
 	Id BIGINT PRIMARY KEY IDENTITY,
 	IdCustomer BIGINT NOT NULL,
 	IdStatus INT NOT NULL,
-	TotalPrice DECIMAL(18,0)
+	TotalPrice DECIMAL(18,0),
+	Date date default Getdate()
+	
 
 	FOREIGN KEY(IdCustomer) REFERENCES Customer(Id),
 	FOREIGN KEY(IdStatus) REFERENCES StatusOrder(Id)
@@ -182,7 +184,7 @@ CREATE TABLE OrderInformation
 -- 16. Export Invoice
 CREATE TABLE ExportInvoice
 (
-	Id BIGINT PRIMARY KEY IDENTITY,
+	Id nvarchar(100) PRIMARY KEY,
 	IdOrder BIGINT,
 	Date DATE DEFAULT GETDATE(),
 
@@ -496,15 +498,19 @@ BEGIN
 END
 GO
 --Add
-CREATE PROC SP_Customer_Add
+create PROC SP_Customer_Add
+@Id bigint out,
 @Name NVARCHAR(100), @Email NVARCHAR(100), @Address NVARCHAR(100), @Phone NVARCHAR(20), @idMember int
 AS
 BEGIN
 	INSERT INTO Customer (Name, Email, Address, Phone, IdMember)
 	VALUES (@Name, @Email, @Address, @Phone, @idMember);
+	SELECT @Id = SCOPE_IDENTITY();
 END
 
 GO
+
+
 --Update 
 CREATE PROC SP_Customer_Update
 @Id BIGINT, @Name NVARCHAR(100), @Email NVARCHAR(100), @Address NVARCHAR(100), @Phone NVARCHAR(20), @idMember int
@@ -537,6 +543,19 @@ AS
 BEGIN
 	SELECT * FROM Customer a WHERE a.Name LIKE '%'+@Name+'%'
 END
+GO
+
+--Search By Phone
+--Search
+CREATE PROC SP_Customer_SearchByPhone
+@Phone NVARCHAR(100)
+AS
+BEGIN
+	SELECT * FROM Customer a WHERE a.Phone LIKE '%'+@Phone+'%'
+END
+
+
+
 
 
 
@@ -863,12 +882,26 @@ END
 GO
 --Add
 CREATE PROC SP_Import_Invoice_Add
+@Id bigint out,
 @Date DATE, @IdSupplier int
 AS
 BEGIN
+BEGIN TRY
+          BEGIN TRANSACTION
 	INSERT INTO ImportInvoice (Date, IdSupplier)
 	VALUES (@Date, @IdSupplier);
+	SELECT @Id = SCOPE_IDENTITY();
+	COMMIT TRANSACTION
+			print 'transaction committed';
+          END TRY
+
+          BEGIN CATCH
+          	PRINT  'error when inserting, rolling back transaction';
+			rollback tran;
+          END CATCH;
 END
+GO
+
 
 GO
 --Update 
@@ -937,8 +970,18 @@ CREATE PROC SP_Import_Invoice_Information_Add
 @IdImportInvoice BIGINT, @IdProduct NVARCHAR(100), @Quantity int, @Price DECIMAL(18,0)
 AS
 BEGIN
+BEGIN TRY
+          BEGIN TRANSACTION
 	INSERT INTO ImportInvoiceInformation(IdImportInvoice, IdProduct, Quantity, Price)
 	VALUES (@IdImportInvoice, @IdProduct, @Quantity, @Price);
+	COMMIT TRANSACTION
+			print 'transaction committed';
+          END TRY
+
+          BEGIN CATCH
+          	PRINT  'error when inserting, rolling back transaction';
+			rollback tran;
+          END CATCH;
 END
 
 GO
@@ -1027,15 +1070,28 @@ BEGIN
 END
 GO
 --Add
-CREATE PROC SP_Order_Add
+create PROC SP_Order_Add
+@Id bigint out,
 @IdCustomer BIGINT, @IdStatus int, @Total DECIMAL(18,0)
 AS
 BEGIN
+ BEGIN TRY
+          BEGIN TRANSACTION
 	INSERT INTO Orders (IdCustomer, IdStatus, TotalPrice)
 	VALUES (@IdCustomer, @IdStatus, @Total);
+	SELECT @Id = SCOPE_IDENTITY();
+	COMMIT TRANSACTION
+			print 'transaction committed';
+          END TRY
+
+          BEGIN CATCH
+          	PRINT  'error when inserting, rolling back transaction';
+			rollback tran;
+          END CATCH;
 END
 
 GO
+
 --Update
 CREATE PROC SP_Order_Update
 @Id BIGINT, @IdCustomer BIGINT, @IdStatus int, @Total DECIMAL(18,0)
@@ -1059,6 +1115,44 @@ END
 
 GO
 
+CREATE Proc SP_Order_GetByDateAndPage
+@startDay date , @endDay DATE , @page INT
+AS
+BEGIN
+	DECLARE @countRows INT = 10 -- Số lượng dòng mỗi page
+	DECLARE @selectedrows INT = @countRows * @page  -- Số tổng dòng tất cả trang trước trang đang chọn, ví dụ lấy trang 3, -> Lấy tổng dòng trang 1 2 3
+	DECLARE @exceptrows INT = (@page-1)*@countRows -- Số tổng dòng trang trước trang đang trọn, ví dụ lấy trang 3 -> Lấy tổng dòng trang  1 2
+
+	; WITH orderByDate AS (
+	Select * from Orders where Date >= @startDay and Date <= @endDay
+	) 
+	SELECT TOP (@selectedrows) * FROM orderByDate 
+	EXCEPT
+	SELECT TOP (@exceptrows) * FROM orderByDate	
+END
+GO
+
+create PROC SP_Order_GetByDate
+@startDay date, @endDay date 
+AS
+BEGIN
+	Select * from Orders where Date >= @startDay and Date <= @endDay
+END
+go
+
+
+--Update
+CREATE PROC SP_Order_UpdateStatus
+@Id BIGINT, @IdStatus int
+AS
+BEGIN
+	Update Orders
+	set
+	IdStatus = @IdStatus
+	where Id = @Id
+END
+
+GO
 
 -- 15. Order Information
 --Get List
@@ -1069,12 +1163,22 @@ BEGIN
 END
 GO
 --Add
-CREATE PROC SP_Order_Information_Add
+create PROC SP_Order_Information_Add
 @IdOrder BIGINT, @IdProduct NVARCHAR(100), @Quantity int, @Price DECIMAL(18,0)
 AS
 BEGIN
+BEGIN TRY
+          BEGIN TRANSACTION --set transaction isolation level repeatable read;
 	INSERT INTO OrderInformation (IdOrder, IdProduct, Quantity, Price)
 	VALUES (@IdOrder, @IdProduct, @Quantity, @Price);
+	COMMIT TRANSACTION
+			print 'transaction committed';
+          END TRY
+
+          BEGIN CATCH
+          	PRINT  'error when inserting, rolling back transaction';
+			rollback tran;
+          END CATCH;
 END
 
 GO
@@ -1101,6 +1205,17 @@ END
 
 GO
 
+--List InvoiceInfo by Id
+CREATE PROC SP_Order_Information_GetListByIdOrder
+@Id BIGINT
+AS
+BEGIN
+	select * from OrderInformation where IdOrder = @Id;
+END
+GO
+
+
+
 
 -- 16. Export Invoice
 --Get List
@@ -1111,18 +1226,18 @@ BEGIN
 END
 GO
 --Add
-CREATE PROC SP_Export_Invoice_Add
-@IdOrder BIGINT, @Date DATE
+create PROC SP_Export_Invoice_Add
+@Id nvarchar(50), @IdOrder BIGINT, @Date DATE
 AS
 BEGIN
-	INSERT INTO ExportInvoice (IdOrder, Date)
-	VALUES (@IdOrder, @Date);
+	INSERT INTO ExportInvoice (Id, IdOrder, Date)
+	VALUES (@Id, @IdOrder, @Date);
 END
 
 GO
 --Update
-CREATE PROC SP_Export_Invoice_Update
-@Id BIGINT, @IdOrder BIGINT, @Date DATE
+create PROC SP_Export_Invoice_Update
+@Id nvarchar(50), @IdOrder BIGINT, @Date DATE
 AS
 BEGIN
 	Update ExportInvoice
@@ -1133,8 +1248,8 @@ END
 
 GO
 --Delete
-CREATE PROC SP_Export_Invoice_Del
-@Id BIGINT
+create PROC SP_Export_Invoice_Del
+@Id nvarchar(50)
 AS
 BEGIN
 	delete from ExportInvoice
@@ -1142,3 +1257,70 @@ BEGIN
 END
 
 GO
+
+
+-- Trigger
+alter trigger QuantityPlus
+on ImportInvoiceInformation
+after insert
+as 
+begin
+declare @InsertedQuantity int
+select @InsertedQuantity = Quantity
+from inserted
+update Product
+set Quantity = Quantity + @InsertedQuantity
+where id = (select Product.Id 
+				from Product join inserted
+				on Product.Id = inserted.IdProduct)
+end;
+
+GO
+
+create trigger QuantityMinusOrder
+on OrderInformation
+after insert
+as 
+begin
+declare @InsertedQuantity int
+select @InsertedQuantity = Quantity
+from inserted
+update Product
+set Quantity = Quantity - @InsertedQuantity
+where id = (select Product.Id 
+				from Product join inserted
+				on Product.Id = inserted.IdProduct)
+end;
+go
+
+
+create trigger DeleteOrderInformation
+on OrderInformation
+after delete
+as 
+begin
+declare @DeletedQuantity int
+select @DeletedQuantity = Quantity
+from deleted
+update Product
+set Quantity = Quantity + @DeletedQuantity
+where id = (select Product.Id 
+				from Product join deleted
+				on Product.Id = deleted.IdProduct)
+end;
+go
+
+create trigger DeleteImportInformation
+on ImportInvoiceInformation
+after delete
+as 
+begin
+declare @DeletedQuantity int
+select @DeletedQuantity = Quantity
+from deleted
+update Product
+set Quantity = Quantity - @DeletedQuantity
+where id = (select Product.Id 
+				from Product join deleted
+				on Product.Id = deleted.IdProduct)
+end;
